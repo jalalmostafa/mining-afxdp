@@ -7,14 +7,9 @@ from markdowngenerator import MarkdownGenerator
 
 
 class Cmds:
-    ARGUMENTS = {}
-
-    def __init__(self, args, unknowns, release=INIT_RELEASE) -> None:
+    def __init__(self, args, release=INIT_RELEASE) -> None:
         self.ns = args
-        if len(unknowns) != 1:
-            raise Exception('One repository URL is needed')
-
-        self.repo_url = os.path.abspath(unknowns[0])
+        self.repo_url = os.path.abspath(args.repo)
         self.git = Git(self.repo_url)
         self.versions = []
         for tag in self.git.repo.tags:
@@ -30,9 +25,11 @@ class Cmds:
         self.file.genTableOfContent(linenumber=3)
 
     def run(self):
-        if self.ns.mode not in Cmds.ARGUMENTS:
-            raise Exception('Command not found')
-        return Cmds.ARGUMENTS[self.ns.mode](self)
+        cmd = self.ns.mode
+        if not hasattr(self, cmd):
+            print(f'Command \'({cmd})\' not found')
+            return
+        return getattr(self, cmd)()
 
     def _run_command(self, cmd):
         process = subprocess.run(cmd, capture_output=True, text=True)
@@ -42,9 +39,10 @@ class Cmds:
         if self.file:
             self.file.__exit__()
 
+    def command(cmd):
+        cmd.__decorated__ = True
+        return cmd
 
-def command(cmd):
-    if cmd.__name__ not in Cmds.ARGUMENTS:
-        Cmds.ARGUMENTS[cmd.__name__] = cmd
-
-    return cmd
+    @classmethod
+    def commands(cls):
+        return [k for k, v in cls.__dict__.items() if hasattr(v, '__decorated__')]

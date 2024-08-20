@@ -1,5 +1,5 @@
 import os
-from commands import Cmds, command
+from commands import Cmds
 from linuxversion import XSKPOOL_RELEASE
 
 
@@ -8,8 +8,8 @@ class DriversSupportCmds(Cmds):
     LINUX_VIRT_DRIVERS = ['veth', 'virtio',
                           'xen-netfront', 'tun', 'bonding', 'netdevsim']
 
-    def __init__(self, args, unknowns,) -> None:
-        super().__init__(args, unknowns, release=XSKPOOL_RELEASE)
+    def __init__(self, args, ) -> None:
+        super().__init__(args, release=XSKPOOL_RELEASE)
         self.search_path = f'{self.repo_url}/drivers/net'
 
     def _parse_support_output(self, output):
@@ -73,7 +73,7 @@ class DriversSupportCmds(Cmds):
             return []
         return self._parse_support_output(output)
 
-    @command
+    @Cmds.command
     def all(self):
         def _mode(driver, zc, c):
             if driver in zc and driver in c:

@@ -1,11 +1,10 @@
-from commands import Cmds, command
+from commands import Cmds
 from pydriller import Commit, Repository
 
 
 class CommitsStatsCmds(Cmds):
-
-    def __init__(self, args, unknowns) -> None:
-        super().__init__(args, unknowns)
+    def __init__(self, args,) -> None:
+        super().__init__(args,)
         self.relevant_commits = []
 
     def _paths_in_string(self, path, string):
@@ -75,7 +74,7 @@ class CommitsStatsCmds(Cmds):
         self.file.addHeader(level=2, text=header)
         self.file.addTable(dictionary_list=table)
 
-    @command
+    @Cmds.command
     def core(self):
         CORE_PATHS = ['net/xdp/', 'net/core/xdp.c', 'include/net/xdp.h',
                       'include/net/xdp_priv.h', 'include/net/xdp_sock_drv.h',
@@ -83,14 +82,14 @@ class CommitsStatsCmds(Cmds):
                       'net/core/filter.c']
         self._dump_stats('Core', CORE_PATHS)
 
-    @command
+    @Cmds.command
     def mlx5(self):
         MLX5_PATHS = ['drivers/net/ethernet/mellanox/mlx5/core/en/xsk',
                       'drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c',
                       'drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h']
         self._dump_stats('MLX5', MLX5_PATHS)
 
-    @command
+    @Cmds.command
     def ice(self):
         ICE_PATHS = ['drivers/net/ethernet/intel/ice/ice_xsk.c',
                      'drivers/net/ethernet/intel/ice/ice_xsk.h']
